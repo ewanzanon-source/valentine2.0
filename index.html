@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valentine 💕</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Dancing Script', cursive;
+      overflow: hidden;
+      background: linear-gradient(270deg, #ffb3c6, #ffc8dd, #ffd6e0, #ffb3c6);
+      background-size: 600% 600%;
+      animation: bgMove 20s ease infinite;
+      touch-action: manipulation;
+    }
+
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.94);
+      padding: 32px;
+      border-radius: 26px;
+      text-align: center;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+      z-index: 2;
+      width: min(90%, 360px);
+    }
+
+    h1 {
+      color: #c9184a;
+      font-size: 2.2em;
+      margin-bottom: 24px;
+      line-height: 1.2;
+    }
+
+    button {
+      font-size: 1.4em;
+      padding: 18px 42px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      margin: 12px;
+      transition: transform 0.2s;
+      font-family: 'Dancing Script', cursive;
+    }
+
+    #yes {
+      background: #e63946;
+      color: white;
+    }
+
+    #yes:active {
+      transform: scale(1.15);
+    }
+
+    #no {
+      background: #ff8fab;
+      color: white;
+      position: absolute;
+    }
+
+    #taunt {
+      position: absolute;
+      font-size: 1.05em;
+      color: #a4133c;
+      background: rgba(255,255,255,0.95);
+      padding: 10px 14px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+      z-index: 3;
+      max-width: 220px;
+      text-align: center;
+    }
+
+    .floating {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .float {
+      position: absolute;
+      animation: floatUp linear forwards;
+      opacity: 0.8;
+    }
+
+    @keyframes floatUp {
+      from {
+        transform: translateY(110vh) scale(0.8);
+        opacity: 0.8;
+      }
+      to {
+        transform: translateY(-20vh) scale(1.1);
+        opacity: 0;
+      }
+    }
+
+    .loading-text {
+      font-size: 1.6em;
+      color: #c9184a;
+      margin-bottom: 12px;
+    }
+
+    .progress {
+      width: 180px;
+      height: 12px;
+      background: #ffd6e0;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: auto;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff4d6d, #e63946);
+      animation: load 2s linear forwards;
+    }
+
+    @keyframes load {
+      to { width: 100%; }
+    }
+
+    .shake {
+      display: inline-block;
+      animation: shake 0.18s infinite;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(0); }
+      25% { transform: translate(1px, -1px); }
+      50% { transform: translate(-1px, 1px); }
+      75% { transform: translate(1px, 1px); }
+      100% { transform: translate(0); }
+    }
+
+    @media (max-width: 360px) {
+      h1 { font-size: 1.9em; }
+      button { font-size: 1.3em; padding: 16px 36px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1 id="question">Veux-tu être ma Valentine ? 💕</h1>
+    <button id="yes">Oui 💖</button>
+    <button id="no">Non</button>
+  </div>
+
+  <div id="taunt">
+    Non tu ne m'auras pas, tu es obligée d'être ma Valentine grosse folle va !
+  </div>
+
+  <div class="floating" id="floating"></div>
+
+  <audio id="popSound">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1b7d0f6c6c.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const noButton = document.getElementById("no");
+    const yesButton = document.getElementById("yes");
+    const question = document.getElementById("question");
+    const floating = document.getElementById("floating");
+    const taunt = document.getElementById("taunt");
+    const popSound = document.getElementById("popSound");
+
+    const noTexts = ["vraiment !", "t'es sûre ?", "sérieusement !", "arrêêête !"];
+    let noIndex = 0;
+
+    function moveNo() {
+      const padding = 20;
+      const maxX = window.innerWidth - noButton.offsetWidth - padding;
+      const maxY = window.innerHeight - noButton.offsetHeight - padding;
+
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
+
+      noButton.style.left = x + "px";
+      noButton.style.top = y + "px";
+
+      noButton.textContent = noTexts[noIndex];
+      noIndex = (noIndex + 1) % noTexts.length;
+
+      taunt.style.left = (x + 8) + "px";
+      taunt.style.top = (y - 55) + "px";
+      taunt.style.opacity = 1;
+
+      setTimeout(() => taunt.style.opacity = 0, 1200);
+    }
+
+    noButton.addEventListener("touchstart", moveNo);
+    noButton.addEventListener("mouseover", moveNo);
+
+    yesButton.addEventListener("click", () => {
+      yesButton.remove();
+      noButton.remove();
+      taunt.remove();
+
+      question.innerHTML = `
+        <div class="loading-text">Chargement de l'amour... 💕</div>
+        <div class="progress"><div class="progress-bar"></div></div>
+      `;
+
+      setTimeout(() => {
+        question.innerHTML =
+          "Wouhouuuuuu !!!!! 💖<br><br>" +
+          "Alors à dans 2 semaines<br>" +
+          "ma petite esperluette d'amour 🌸<br><br>" +
+          "<span id='love' class='shake'></span>";
+
+        explosion();
+        typeLove("Je t'aime ❤️");
+      }, 2000);
+    });
+
+    function typeLove(text) {
+      const el = document.getElementById("love");
+      let i = 0;
+      const interval = setInterval(() => {
+        el.textContent += text[i];
+        if (i === text.length - 1) popSound.play();
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, 140);
+    }
+
+    function spawnHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("float");
+      heart.textContent = "💖";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = Math.random() * 22 + 14 + "px";
+      heart.style.animationDuration = Math.random() * 8 + 8 + "s";
+      floating.appendChild(heart);
+      setTimeout(() => heart.remove(), 18000);
+    }
+
+    function explosion() {
+      for (let i = 0; i < 80; i++) {
+        spawnHeart();
+      }
+    }
+
+    // 💕 fond animé optimisé mobile
+    const heartInterval = window.innerWidth < 500 ? 600 : 350;
+    setInterval(spawnHeart, heartInterval);
+  </script>
+
+</body>
+</html>
